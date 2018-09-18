@@ -4,4 +4,24 @@
 
 <h1><i>Login!</i></h1>
 
+<br />
+
+{% if error %}
+
+<div class="alert alert-danger" role="alert">
+  {{ error }}
+</div>
+
+{% endif %}
+
+<form method="POST" action="{% url 'login' %}">
+{% csrf_token %}
+  <p>Username:</p>
+    <input type="text" placeholder="Username" name="username"/>
+  <p>Password:</p>
+    <input type="password" placeholder="Password" name="password" />
+  <br />
+  <br />
+  <input type="submit" class="btn btn-primary" value="Login"/>
+</form>
 {% endblock %}
