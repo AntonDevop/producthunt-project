@@ -6,6 +6,14 @@
 
 <br />
 
+{% if error %}
+
+<div class="alert alert-danger" role="alert">
+  {{ error }}
+</div>
+
+{% endif %}
+
 <form method="POST" action="{% url 'signup' %}">
 {% csrf_token %}
   <p>Username:</p>
