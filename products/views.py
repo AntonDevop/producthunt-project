@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Product
+from .models import Product, Vote
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 def home(request):
     return render(request, 'products/home.html')
@@ -30,4 +31,26 @@ def create(request):
 
 def detail(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
-    return render(request, 'products/detail.html', {'product':product})
+    try:
+        vote = Vote.objects.get(user=request.user.id, product=product_id)
+        error = 'You already have voted!'
+        return render(request, 'products/detail.html', {'product':product, 'error':error})
+    except Vote.DoesNotExist:
+        return render(request, 'products/detail.html', {'product':product})
+
+@login_required
+def upvote(request, product_id):
+    if request.method == 'POST':
+        product = get_object_or_404(Product, pk=product_id)
+        user_id = request.user.id
+        try:
+            vote = Vote.objects.get(user=user_id, product=product_id)
+            return redirect('/products/' + str(product_id), {'error':'You already have voted!'})
+        except Vote.DoesNotExist:
+            vote = Vote()
+            vote.user  = request.user
+            vote.product = product
+            vote.save()
+            product.votes_total += 1
+            product.save()
+            return redirect('/products/' + str(product_id))
