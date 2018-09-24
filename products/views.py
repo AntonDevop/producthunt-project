@@ -5,7 +5,12 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 def home(request):
-    return render(request, 'products/home.html')
+    if request.user:
+        error = 0
+    else:
+        error = 1
+    products = Product.objects
+    return render(request, 'products/home.html', {'products':products, 'error':error})
 
 @login_required
 def create(request):
